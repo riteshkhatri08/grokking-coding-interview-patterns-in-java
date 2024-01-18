@@ -16,7 +16,7 @@ public class RemoventhNodefromEndofList {
     }
 
     class ReverseLinkedList {
-        public static LinkedListNode removeNthLastNode(LinkedListNode head, int n) {
+        public LinkedListNode removeNthLastNode(LinkedListNode head, int n) {
             LinkedListNode left = head;
             LinkedListNode right = head;
 

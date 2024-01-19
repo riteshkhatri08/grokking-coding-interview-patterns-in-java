@@ -1,3 +1,5 @@
+// https://www.educative.io/courses/grokking-coding-interview-patterns-java/middle-of-the-linked-list
+// https://leetcode.com/problems/middle-of-the-linked-list/submissions/1150806748/
 package fastAndSlowPointers;
 
 public class MiddleNodeOfALinkedList {

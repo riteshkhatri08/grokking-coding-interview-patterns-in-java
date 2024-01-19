@@ -1,3 +1,6 @@
+// https://www.educative.io/courses/grokking-coding-interview-patterns-java/happy-number
+// https://leetcode.com/problems/happy-number/
+
 package fastAndSlowPointers;
 
 public class HappyNumber {

@@ -1,3 +1,6 @@
+// https://www.educative.io/courses/grokking-coding-interview-patterns-java/linked-list-cycle
+// https://leetcode.com/problems/linked-list-cycle/
+
 package fastAndSlowPointers;
 
 public class CycleDetection {

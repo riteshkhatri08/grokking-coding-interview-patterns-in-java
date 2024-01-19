@@ -7,53 +7,51 @@ public class HappyNumber {
 
         var result = isHappyNumber(n);
         System.out.println("ANSWER = " + result);
+
     }
 
     static int[] squares = new int[10];
-
-    public static boolean isHappyNumber(int n) {
-        if (n == 1) {
-            return true;
-        }
-        for (int i = 0; i < 10; i++) {
-            squares[i] = (int) Math.pow(i, 2);
-        }
-
-        long fast = sumOfSquareOfDigits(n);
-        if (fast == 1) {
-            return true;
-        }
-        fast = sumOfSquareOfDigits(fast);
-        long slow = sumOfSquareOfDigits(n);
-        while (fast != slow) {
-            if (fast == 1) {
-                return true;
-            }
-            fast = sumOfSquareOfDigits(fast);
-            if (fast == 1) {
-                return true;
-            }
-            fast = sumOfSquareOfDigits(fast);
-            slow = sumOfSquareOfDigits(slow);
-        }
-        return false;
+    static long sum = 0;
+    static int d = 0;
+    static {
+        squares[0] = 0;
+        squares[1] = 1;
+        squares[2] = 4;
+        squares[3] = 9;
+        squares[4] = 16;
+        squares[5] = 25;
+        squares[6] = 36;
+        squares[7] = 49;
+        squares[8] = 64;
+        squares[9] = 81;
     }
 
-    public static long sumOfSquareOfDigits(long n) {
-        // if (memory.containsKey(n)){
-        // // System.out.println("return " + memory.get(n) + " for " + n);
-        // return memory.get(n);
-        // }
-        long sum = 0;
-        int d;
-        long num = n;
+    public static boolean isHappyNumber(int n) {
+
+        long fast = n, slow = n;
+
+        while (fast != 1) {
+            slow = sumOfSquareOfDigits(slow);
+            fast = sumOfSquareOfDigits(sumOfSquareOfDigits(fast));
+            if (fast == 1 || slow == 1) {
+                return true;
+            } else if (fast == slow) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static long sumOfSquareOfDigits(long num) {
+        // System.out.println("doing " + num);
+        sum = 0;
         while (num > 0) {
             d = (int) (num % 10);
             sum = sum + squares[d];
             num = num / 10;
         }
-        // memory.put(n,sum);
-        // System.out.println("return " + memory.get(n) + " for " + n);
+        // System.err.println("RETURNING - " + sum);
         return sum;
     }
 }

@@ -1,3 +1,6 @@
+// https://www.educative.io/courses/grokking-coding-interview-patterns-java/find-maximum-in-sliding-window
+// https://leetcode.com/problems/sliding-window-maximum/
+
 package slidingWindow;
 
 import java.util.LinkedList;
@@ -52,21 +55,21 @@ public class SlidingWindowMaximum {
         System.out.println("LOOKING TO ADD " + element);
         System.out.println("BEFORE: " + list);
 
-        for (int j = list.size()-1 ; j > -1 ; j--) {
+        for (int j = list.size() - 1; j > -1; j--) {
             if (list.get(j) < element) {
                 list.remove(j);
                 // j--;
                 // System.out.println("REMOVED" + a);
-            }else{
+            } else {
                 break;
             }
         }
         // for (int j = 0; j < list.size(); j++) {
-        //     if (list.get(j) < element) {
-        //         list.remove(j);
-        //         j--;
-        //         // System.out.println("REMOVED" + a);
-        //     }
+        // if (list.get(j) < element) {
+        // list.remove(j);
+        // j--;
+        // // System.out.println("REMOVED" + a);
+        // }
         // }
         list.add(element);
         System.out.println("AFTER: " + list);

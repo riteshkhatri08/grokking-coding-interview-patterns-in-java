@@ -9,7 +9,7 @@ public class LongestRepeatingCharacterReplacement {
 
     public static int longestRepeatingCharacterReplacement(String s, int k) {
 
-        int[] charcount = new int[26];
+        int[] charcount = new int[91];
 
         int left = 0, right = 0, maxsofar = 0;
 
@@ -23,42 +23,43 @@ public class LongestRepeatingCharacterReplacement {
 
             // System.out.println("NEW CHAR CAME IN - " + charray[right] + " , right=" +
             // right);
-            charcount[charray[right] - 'A']++;
+
+            // Increment count of current character
+            charcount[charray[right]]++;
 
             // System.out.println("CHAR COUNT = " + charcount);
 
             // Check if current character same as max character
             if (maxchar != charray[right]) {
 
-                // Check how many characters have we replaced already
-                int replaced;
-                if (charcount[maxchar - 'A'] < charcount[charray[right] - 'A']) {
+                // Check if there's change in max char due to new character
+                if (charcount[maxchar] < charcount[charray[right]]) {
                     maxchar = charray[right];
-
                     // System.out.println(" New max xhar " + maxchar);
-                }
-                replaced = right - left - charcount[maxchar - 'A'] + 1;
+                } else {
+                    // Check how many characters have we replaced already
+                    // System.out.println("Replaced = " + replaced);
+                    while ((right - left - charcount[maxchar] + 1) > k) {
 
-                // System.out.println("Replaced = " + replaced);
-                while (replaced > k) {
+                        // time to shrink window
+                        charcount[charray[left]]--;
+                        left++;
 
-                    // time to shrink window
-                    charcount[charray[left] - 'A']--;
-                    left++;
+                        // System.out.println("decrease window, char count" + charcount + " , left=" +
+                        // left);
 
-                    // System.out.println("decrease window, char count" + charcount + " , left=" +
-                    // left);
-                    if ((right - left + 1) > maxsofar) {
-                        maxsofar = right - left + 1;
+                        if ((right - left + 1) > maxsofar) {
+                            maxsofar = right - left + 1;
+                        }
+
+                        // Now get the new max char
+                        maxchar = getMostRecurringCharacter(charcount);
+
                     }
-                    // Now get the new max char
-
-                    maxchar = getMostRecurringCharacter(charcount);
-                    replaced = right - left - charcount[maxchar - 'A'] + 1;
-
                 }
 
             } else {
+                // Then no issue, we as we are not increasing replace count
                 if ((right - left) > maxsofar) {
                     maxsofar = right - left;
                 }
@@ -75,12 +76,12 @@ public class LongestRepeatingCharacterReplacement {
     }
 
     public static char getMostRecurringCharacter(int[] charcount) {
-        int maxindex = 0;
-        for (int curindex = 0; curindex < charcount.length; curindex++) {
+        int maxindex = 65;
+        for (int curindex = 65; curindex < charcount.length; curindex++) {
             if (charcount[maxindex] < charcount[curindex]) {
                 maxindex = curindex;
             }
         }
-        return (char) ('A' + maxindex);
+        return (char) (maxindex);
     }
 }

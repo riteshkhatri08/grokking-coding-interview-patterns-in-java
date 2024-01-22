@@ -8,7 +8,7 @@ public class LongestRepeatingCharacterReplacement {
     }
 
     public static int longestRepeatingCharacterReplacement(String s, int k) {
-
+        
         int[] charcount = new int[91];
 
         int left = 0, right = 0, maxsofar = 0;
@@ -47,10 +47,6 @@ public class LongestRepeatingCharacterReplacement {
 
                         // System.out.println("decrease window, char count" + charcount + " , left=" +
                         // left);
-
-                        if ((right - left + 1) > maxsofar) {
-                            maxsofar = right - left + 1;
-                        }
 
                         // Now get the new max char
                         maxchar = getMostRecurringCharacter(charcount);

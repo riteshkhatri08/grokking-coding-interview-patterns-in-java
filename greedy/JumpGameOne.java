@@ -1,7 +1,7 @@
-// https://leetcode.com/problems/jump-game/
-// https://www.educative.io/courses/grokking-coding-interview-patterns-java/jump-game-i
-
 package greedy;
+// https://leetcode.com/problems/jump-game/
+
+// https://www.educative.io/courses/grokking-coding-interview-patterns-java/jump-game-i
 
 public class JumpGameOne {
 

@@ -1,6 +1,7 @@
+package greedy;
 // https://leetcode.com/problems/boats-to-save-people/description/
 // https://www.educative.io/courses/grokking-coding-interview-patterns-java/boats-to-save-people
-package greedy;
+
 
 import java.util.Arrays;
 

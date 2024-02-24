@@ -4,21 +4,38 @@
 package stack;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class BasicCalculator {
 
     public static void main(String[] args) {
-        String input = "12 - (6 + 2) + 5";
-        System.out.println("Result= " + calculator(input));
+        // System.out.println(300000/11);
+
+        String input = "12 - 23  - (34 + 15) + 50";
+        System.out.println("Result= " + new BasicCalculator().calculator(input));
+
     }
 
-    public static int calculator(String expression) {
-        ArrayDeque<String> stack = new ArrayDeque<String>();
+    static final int POSITION_OFFSET = 200;
+    int position = 0;
 
+    public int calculator(String expression) {
         char[] charray = expression.toCharArray();
+        expression = null;
+        // Stack to store ops
+        ArrayDeque<Character> stack = new ArrayDeque<Character>();
 
-        int temp = -1;
-        int resultSoFar = 0;
+        // store operands in this array
+        // int [] arr = new int[27273];
+        // we can have a valid expression with a maximum of 15000
+        // int[] operands = new int[15000];
+        ArrayList<Integer> operands = new ArrayList<Integer>();
+        // store temp parsedO number
+        int tempNumber = 0;
+        // flag to see if a number has been recorded and is to be added to array
+        boolean flag = false;
+
         for (char op : charray) {
             System.out.println("INPUT = " + op);
             switch (op) {
@@ -32,150 +49,151 @@ public class BasicCalculator {
                 case '8':
                 case '9':
                 case '0': {
-                    {
-                        if (temp == -1)
-                            temp = 0;
-                        temp = temp * 10 + (op - '0');
-                        System.out.println(op);
-                        break;
 
+                    if (flag == false) {
+                        // Update temp number
+                        flag = true;
                     }
-                }
-
-                case '+': {
-                    if (temp != -1) {
-                        if (!stack.isEmpty() && stack.peek().contentEquals("-")) {
-                            stack.pop();
-                            stack.push("+");
-                            temp = 0 - temp;
-                        }
-                        System.out.println("temp=" + temp);
-                        stack.push(temp + "");
-                        temp = -1;
-                    }
-                    System.out.println("pushing = +");
-                    stack.push("+");
-
+                    tempNumber = tempNumber * 10 + (op - '0');
                     break;
                 }
-
-                case '-': {
-                    if (temp != -1) {
-                        if (!stack.isEmpty() && stack.peek().contentEquals("-")) {
-                            stack.pop();
-                            stack.push("+");
-                            temp = 0 - temp;
-                        }
-                        System.out.println("temp=" + temp);
-                        stack.push(temp + "");
-                        temp = -1;
-                    }
-                    System.out.println("pushing = -");
-                    stack.push("-");
-
-                    break;
-                }
+                case '+':
+                case '-':
                 case '(': {
-                    if (temp != -1) {
-                        if (!stack.isEmpty() && stack.peek().contentEquals("-")) {
-                            stack.pop();
-                            stack.push("+");
-                            temp = 0 - temp;
-                        }
-                        System.out.println("temp=" + temp);
-                        stack.push(temp + "");
-                        temp = -1;
+                    // need to record temp number
+                    if (flag) {
+                        flag = false;
+                        addNumberToStack(stack, operands, tempNumber);
+                        tempNumber = 0;
                     }
-                    System.out.println("pushing = (");
-                    stack.push("(");
+                    // Now add actual '+ or - or (' operand that came in
+                    stack.push(op);
                     break;
                 }
+
                 case ')': {
-                    // DO POPPING HERE
-                    if (temp != -1) {
-                        if (!stack.isEmpty() && stack.peek().contentEquals("-")) {
-                            stack.pop();
-                            stack.push("+");
-                            temp = 0 - temp;
-                        }
-                        System.out.println("temp=" + temp);
-                        stack.push(temp + "");
-                        temp = -1;
+                    if (flag) {
+                        flag = false;
+                        addNumberToStack(stack, operands, tempNumber);
+                        tempNumber = 0;
                     }
-                    System.out.println("pushing = )");
-                    // stack.push(")");
-                    resultSoFar = evaluate(stack, resultSoFar);
-                    if (!stack.isEmpty() && stack.peek().contentEquals("-")) {
-                        stack.pop();
-                        stack.push("+");
-                        resultSoFar = 0 - resultSoFar;
-                    }
-                    stack.push(resultSoFar + "");
+                    // when encountered a ')' starting popping elements and evaluate the expression
+                    // until you see opening paranthesis '(';
+                    // push this reseult of evauluated paranthesis back in stack
+                    addNumberToStack(stack, operands, evaluate(stack, operands));
                     break;
                 }
                 case ' ': {
-                    if (temp != -1) {
-                        if (!stack.isEmpty() && stack.peek().contentEquals("-")) {
-                            stack.pop();
-                            stack.push("+");
-                            temp = 0 - temp;
-                        }
-                        System.out.println("temp=" + temp);
-                        stack.push(temp + "");
-                        temp = -1;
+                    if (flag) {
+                        flag = false;
+                        addNumberToStack(stack, operands, tempNumber);
+                        tempNumber = 0;
                     }
                     break;
-
                 }
 
             }
-            System.out.println("STACK - " + stack);
-        }
-        if (temp != -1) {
-            if (!stack.isEmpty() && stack.peek().contentEquals("-")) {
-                stack.pop();
-                stack.push("+");
-                temp = 0 - temp;
-            }
-            System.out.println("temp=" + temp);
-            stack.push(temp + "");
-            temp = -1;
-        }
-        int result = evaluate(stack, resultSoFar);
 
-        return result;
+            // print stack
+            printStack(stack, operands);
+        }
+        if (flag) {
+            flag = false;
+            addNumberToStack(stack, operands, tempNumber);
+            tempNumber = 0;
+        }
+        return evaluate(stack, operands);
+
     }
 
-    private static int evaluate(ArrayDeque<String> stack, int resultSoFar) {
-        boolean flagRightOperand = false;
-        int rightOperand = -1, leftOperand = -1;
-        String operator = "";
-        while (!stack.isEmpty() && !stack.peek().contentEquals("(")) {
-            String current = stack.pop();
-            switch (current) {
-
-                case "+": {
-                    operator = "+";
-                    break;
-                }
-                case "-": {
-                    operator = "-";
+    private void printStack(ArrayDeque<Character> stack, ArrayList<Integer> operands) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        Iterator<Character> itr = stack.iterator();
+        char c;
+        while (itr.hasNext()) {
+            c = itr.next();
+            switch (c) {
+                case '+':
+                case '-':
+                case '(':
+                case ')': {
+                    sb.append(c).append(", ");
                     break;
                 }
                 default: {
+                    sb.append(operands.get(c - POSITION_OFFSET)).append(", ");
+                    break;
+                }
+            }
+        }
+        sb.append(" ]");
+        System.out.println("STACK : " + sb.toString());
+    }
+
+    private void addNumberToStack(ArrayDeque<Character> stack, ArrayList<Integer> operands, int tempNumber) {
+
+        // Check if previous element in stack is "-"
+        if (!stack.isEmpty() && stack.peek() == '-') {
+
+            // change current number to negative
+            tempNumber = -1 * tempNumber;
+
+            // change element at top of stack to '+' as we have consumed the "-"
+            stack.pop();
+            stack.push('+');
+        }
+        System.out.println("ADDING NUMBER: " + tempNumber);
+        // store at given position in array
+
+        if (operands.size() <= position) {
+            operands.add(tempNumber);
+        } else {
+            operands.set(position, tempNumber);
+        }
+        // reset temp number to 0
+        tempNumber = 0;
+        System.out.println("PUSHING IN STACK: " + (char) (position + POSITION_OFFSET));
+
+        // now add some offset to this postion and record it in stack
+        stack.push((char) (position + POSITION_OFFSET));
+
+        // Increment position for next available number
+        position++;
+    }
+
+    private int evaluate(ArrayDeque<Character> stack, ArrayList<Integer> operands) {
+
+        boolean flagRightOperand = false;
+        int rightOperand = -1, leftOperand = -1;
+        char operator = ' ';
+        while (!stack.isEmpty() && !(stack.peek() == '(')) {
+            char current = stack.pop();
+            switch (current) {
+
+                case '+':
+                case '-': {
+                    operator = current;
+                    break;
+                }
+
+                default: {
                     // NUMBER
                     if (flagRightOperand == false) {
-                        rightOperand = Integer.parseInt(current);
+
+                        rightOperand = operands.get(current - POSITION_OFFSET);
+                        position--;
                         flagRightOperand = true;
                     } else {
-                        leftOperand = Integer.parseInt(current);
+                        leftOperand = operands.get(current - POSITION_OFFSET);
+                        position--;
                         switch (operator) {
-                            case "+": {
+                            case '+': {
                                 System.out.println("OPERATION: " + rightOperand + " + " + leftOperand);
                                 rightOperand = rightOperand + leftOperand;
                                 break;
                             }
-                            case "-": {
+                            case '-': {
                                 System.out.println("OPERATION -" + rightOperand + " - " + leftOperand);
                                 rightOperand = rightOperand - leftOperand;
                                 break;
@@ -186,9 +204,11 @@ public class BasicCalculator {
                 }
             }
         }
-        if (!stack.isEmpty() && stack.peek().contentEquals("(")) {
+        if (!stack.isEmpty() && (stack.peek() == '(')) {
+            // remove this bracket
             stack.pop();
         }
+
         return rightOperand;
     }
 }

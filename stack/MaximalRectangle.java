@@ -5,8 +5,8 @@ import java.util.ArrayDeque;
 public class MaximalRectangle {
     public static void main(String[] args) {
         char[][] matrix = new char[][] {};
-
         var answer = new MaximalRectangle().maximalRectangle(matrix);
+
         System.out.println("ANSWER = " + answer);
     }
 
@@ -22,7 +22,7 @@ public class MaximalRectangle {
         int k, j;
 
         for (int i = 0; i < matrix.length; i++) {
-            // System.out.println("NEW ROW - "+ i);
+            System.out.println("NEW ROW - " + i);
             k = arr.length - 1;
             j = 0;
             curAreaA = 0;
@@ -34,27 +34,17 @@ public class MaximalRectangle {
                 arr[j] = matrix[i][j] == '0' ? 0 : arr[j] + (matrix[i][j] - '0');
                 arr[k] = matrix[i][k] == '0' ? 0 : arr[k] + (matrix[i][k] - '0');
 
-                while (!stackLeft.isEmpty() && (arr[stackLeft.peek()] >= arr[j])) {
+                // nsl
+                while (!stackLeft.isEmpty() && (arr[stackLeft.peek()] >= arr[j]))
                     stackLeft.pop();
-                }
-                if (stackLeft.isEmpty()) {
-                    nsl[j] = -1;
-                } else {
-                    nsl[j] = stackLeft.peek();
-                }
-                stackLeft.push(j);
+                nsl[j] = stackLeft.isEmpty() ? -1 : stackLeft.peek();
+                stackLeft.push(j++);
+
                 // nsr
-                while (!stackRight.isEmpty() && (arr[stackRight.peek()] >= arr[k])) {
+                while (!stackRight.isEmpty() && (arr[stackRight.peek()] >= arr[k]))
                     stackRight.pop();
-                }
-                if (stackRight.isEmpty()) {
-                    nsr[k] = arr.length;
-                } else {
-                    nsr[k] = stackRight.peek();
-                }
-                stackRight.push(k);
-                j++;
-                k--;
+                nsr[k] = stackRight.isEmpty() ? arr.length : stackRight.peek();
+                stackRight.push(k--);
             }
 
             if (j == k) {
@@ -63,37 +53,24 @@ public class MaximalRectangle {
 
             while (j < arr.length) {
 
-                while (!stackLeft.isEmpty() && (arr[stackLeft.peek()] >= arr[j])) {
+                // nsl
+                while (!stackLeft.isEmpty() && (arr[stackLeft.peek()] >= arr[j]))
                     stackLeft.pop();
-                }
-                if (stackLeft.isEmpty()) {
-                    nsl[j] = -1;
-                } else {
-                    nsl[j] = stackLeft.peek();
-                }
+                nsl[j] = stackLeft.isEmpty() ? -1 : stackLeft.peek();
                 stackLeft.push(j);
+
                 // nsr
-                while (!stackRight.isEmpty() && (arr[stackRight.peek()] >= arr[k])) {
+                while (!stackRight.isEmpty() && (arr[stackRight.peek()] >= arr[k]))
                     stackRight.pop();
-                }
-                if (stackRight.isEmpty()) {
-                    nsr[k] = arr.length;
-                } else {
-                    nsr[k] = stackRight.peek();
-                }
+                nsr[k] = stackRight.isEmpty() ? arr.length : stackRight.peek();
                 stackRight.push(k);
 
                 curAreaA = (nsr[j] - nsl[j] - 1) * arr[j];
                 curAreaB = (nsr[k] - nsl[k] - 1) * arr[k];
-                if (curAreaA > curAreaB) {
-                    if (curAreaA > maxArea) {
-                        maxArea = curAreaA;
-                    }
-                } else {
-                    if (curAreaB > maxArea) {
-                        maxArea = curAreaB;
-                    }
-                }
+
+                maxArea = (curAreaA > maxArea) ? curAreaA : maxArea;
+                maxArea = (curAreaB > maxArea) ? curAreaB : maxArea;
+
                 j++;
                 k--;
             }

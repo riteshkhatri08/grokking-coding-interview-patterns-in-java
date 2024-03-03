@@ -1,7 +1,5 @@
 package stack;
 
-import java.util.ArrayDeque;
-
 public class TrappingRainWater {
     public static void main(String[] args) {
         int[] heights = new int[] { 0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1 };
@@ -11,108 +9,114 @@ public class TrappingRainWater {
 
     private static int trapWater(int[] heights) {
         int waterTrapped = 0;
-        int result = 0, left = 0, right = heights.length - 1;
+        int left = 0, right = heights.length - 1;
+        int highLeft = -1;
+        int highRight = -1;
         int[] ngl = new int[heights.length];
         int[] ngr = new int[heights.length];
-        ArrayDeque<Integer> leftStack = new ArrayDeque<Integer>();
-        ArrayDeque<Integer> rightStack = new ArrayDeque<Integer>();
 
-        // Iterate half array without calculating diff b/w ngl and ngr
-        while (right > left) {
-            while (!leftStack.isEmpty() && leftStack.peek() < heights[left])
-                leftStack.pop();
-
-            if (leftStack.isEmpty()) {
-                ngl[left] = -1;
-                leftStack.push(heights[left]);
+        while (left < right) {
+            // Left side first
+            if (highLeft >= heights[left]) {
+                ngl[left] = highLeft;
             } else {
-                ngl[left] = leftStack.peek();
+                ngl[left] = -1;
+                highLeft = heights[left];
             }
             left++;
-            // ngl[left] = leftStack.isEmpty() ? -1 : leftStack.peek();
-            // leftStack.push(heights[left++]);
 
-            while (!rightStack.isEmpty() && rightStack.peek() < heights[right])
-                rightStack.pop();
-
-            if (rightStack.isEmpty()) {
-                ngr[right] = -1;
-                rightStack.push(heights[right]);
+            if (highRight >= heights[right]) {
+                ngr[right] = highRight;
             } else {
-                ngr[right] = rightStack.peek();
+                ngr[right] = -1;
+                highRight = heights[right];
             }
             right--;
-            // ngr[right] = rightStack.isEmpty() ? -1 : rightStack.peek();
-            // rightStack.push(heights[right--]);
         }
+        // Update center
+        if (left == right) {
 
-        int curTrap = 0;
-        int curHeight = 0;
-
-        if (right == left) {
-            while (!leftStack.isEmpty() && leftStack.peek() < heights[left])
-                leftStack.pop();
-            if (leftStack.isEmpty()) {
+            if (highLeft >= heights[left]) {
+                ngl[left] = highLeft;
+            } else {
                 ngl[left] = -1;
-                leftStack.push(heights[left]);
-            } else {
-                ngl[left] = leftStack.peek();
+                highLeft = heights[left];
             }
 
-            while (!rightStack.isEmpty() && rightStack.peek() < heights[right])
-                rightStack.pop();
-            if (rightStack.isEmpty()) {
+            if (highRight >= heights[right]) {
+                ngr[right] = highRight;
+            } else {
                 ngr[right] = -1;
-                rightStack.push(heights[right]);
-            } else {
-                ngr[right] = rightStack.peek();
+                highRight = heights[right];
             }
 
-            if (ngr[left] > 0 && ngl[left] > 0) {
-                curHeight = ngl[left] > ngr[left] ? ngr[left] : ngl[left];
-                curTrap = curHeight - heights[left];
-                waterTrapped += curTrap;
-            }
-            left++;
-            right--;
-        }
-
-        // repeat second half , but this time calculate water trapping
-        while (right > -1) {
-            while (!leftStack.isEmpty() && leftStack.peek() < heights[left])
-                leftStack.pop();
-            if (leftStack.isEmpty()) {
-                ngl[left] = -1;
-                leftStack.push(heights[left]);
-            } else {
-                ngl[left] = leftStack.peek();
+            if (ngl[right] > 0 && ngr[right] > 0) {
+                if (ngl[right] > ngr[right]) {
+                    waterTrapped += ngr[right] - heights[right];
+                } else {
+                    waterTrapped += ngl[right] - heights[right];
+                }
             }
 
-            while (!rightStack.isEmpty() && rightStack.peek() < heights[right])
-                rightStack.pop();
-            if (rightStack.isEmpty()) {
-                ngr[right] = -1;
-                rightStack.push(heights[right]);
-            } else {
-                ngr[right] = rightStack.peek();
+            if (ngl[left] > 0 && ngr[left] > 0) {
+                if (ngl[left] > ngr[left]) {
+                    waterTrapped += ngr[left] - heights[left];
+                } else {
+                    waterTrapped += ngl[left] - heights[left];
+                }
             }
 
-            if (ngr[right] > 0 && ngl[right] > 0) {
-                curHeight = ngl[right] > ngr[right] ? ngr[right] : ngl[right];
-                curTrap = curHeight - heights[right];
-                waterTrapped += curTrap;
-            }
-
-            if (ngr[left] > 0 && ngl[left] > 0) {
-                curHeight = ngl[left] > ngr[left] ? ngr[left] : ngl[left];
-                curTrap = curHeight - heights[left];
-                waterTrapped += curTrap;
-            }
             right--;
             left++;
         }
-        printArray("NGL", ngl);
-        printArray("NGR", ngr);
+
+        while (left < heights.length) {
+            if (highLeft >= heights[left]) {
+                ngl[left] = highLeft;
+            } else {
+                ngl[left] = -1;
+                highLeft = heights[left];
+            }
+
+            if (highRight >= heights[right]) {
+                ngr[right] = highRight;
+            } else {
+                ngr[right] = -1;
+                highRight = heights[right];
+            }
+
+            if (ngl[right] > 0 && ngr[right] > 0) {
+                if (ngl[right] > ngr[right]) {
+                    waterTrapped += ngr[right] - heights[right];
+                } else {
+                    waterTrapped += ngl[right] - heights[right];
+                }
+            }
+
+            if (ngl[left] > 0 && ngr[left] > 0) {
+                if (ngl[left] > ngr[left]) {
+                    waterTrapped += ngr[left] - heights[left];
+                } else {
+                    waterTrapped += ngl[left] - heights[left];
+                }
+            }
+
+            right--;
+            left++;
+
+        }
+
+        // for (int i = 0; i < heights.length; i++) {
+        //     if (ngl[i] > 0 && ngr[i] > 0) {
+        //         if (ngl[i] > ngr[i]) {
+        //             waterTrapped += ngr[i] - heights[i];
+        //         } else {
+        //             waterTrapped += ngl[i] - heights[i];
+        //         }
+        //     }
+        // }
+        // printArray("NGL", ngl);
+        // printArray("NGR", ngr);
         return waterTrapped;
     }
 
